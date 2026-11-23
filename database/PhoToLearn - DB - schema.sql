@@ -200,8 +200,8 @@ CREATE TABLE IF NOT EXISTS `PhoToLearn`.`RadunoFotografico` (
     CHECK (Longitudine BETWEEN -180 AND 180),
   CONSTRAINT chk_Raduno_Orario
     CHECK (
-        OrarioInizio >= '00:00:00'
-        AND OrarioInizio <= '23:59:59'
+        OrarioInizio >= MAKETIME(0, 0, 0)
+        AND OrarioInizio <= MAKETIME(23, 59, 59)
     ),
     CONSTRAINT chk_Raduno_Luogo
     CHECK (CHAR_LENGTH(TRIM(Luogo)) > 0))
@@ -244,8 +244,8 @@ CREATE TABLE IF NOT EXISTS `PhoToLearn`.`Richiesta` (
     CHECK (CHAR_LENGTH(TRIM(Contenuto)) > 0),
   CONSTRAINT chk_Richiesta_Orario
     CHECK (
-        OrarioInvio >= '00:00:00'
-        AND OrarioInvio <= '23:59:59'
+        OrarioInvio >= MAKETIME(0, 0, 0)
+        AND OrarioInvio <= MAKETIME(23, 59, 59)
     ))
 ENGINE = InnoDB;
 
@@ -286,8 +286,8 @@ CREATE TABLE IF NOT EXISTS `PhoToLearn`.`Risposta` (
     CHECK (CHAR_LENGTH(TRIM(Contenuto)) > 0),
   CONSTRAINT chk_Risposta_Orario
     CHECK (
-        OrarioInvio >= '00:00:00'
-        AND OrarioInvio <= '23:59:59'
+        OrarioInvio >= MAKETIME(0, 0, 0)
+        AND OrarioInvio <= MAKETIME(23, 59, 59)
     ))
 ENGINE = InnoDB;
 
