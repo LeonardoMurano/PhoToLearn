@@ -6,16 +6,37 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-//classe con responsabilità di gestione della configurazione del sistema
+/**classe con responsabilità di:
+ * 1-caricamento in memoria principale delle proprietà di configurazione del sistema
+ * 2-mantenimento delle proprietà di configurazione del sistema
+ * -----
+ * la classe è singleton: le proprietà contenute in config.properties
+ * sono condivise da tutte le classi del software.
+ */
 public class GestoreConfigurazione {
+
+    //riferimento all'unica istanza di GestoreConfigurazione
+    private static GestoreConfigurazione instance;
 
     private final Properties properties;
 
-    //costruttore senza parametri di GestoreConfigurazione
-    public GestoreConfigurazione() {
+
+    // Costruttore privato: impedisce l'istanziazione esterna
+    private GestoreConfigurazione() {
         properties = new Properties();
         caricaProperties();
     }
+
+    // Getter dell'unica istanza di GestoreConfigurazione
+    public static GestoreConfigurazione getInstance() {
+
+        if (instance == null) {
+            instance = new GestoreConfigurazione();
+        }
+
+        return instance;
+    }
+
 
     //metodo con responsabilità di caricare tutte le proprietà definite in 'config.properties' all'interno di properties
     private void caricaProperties() {
@@ -42,30 +63,53 @@ public class GestoreConfigurazione {
         }
     }
 
-    //metodo con responsabilità di recupero della proprietà 'tipologiaGUI'
-    public TipologiaGUI getTipologiaGUI() {
+    //metodo con responsabilità di recuperare e validare una proprietà
+    private String getProprieta(String nomeProprieta) {
 
-        //recupera valore associato alla proprietà 'interfaccia'
-        String stringaTipologiaGUI = properties.getProperty("tipologiaGUI");
+        //recupera valore associato alla proprietà nomeProprieta
+        String valore = properties.getProperty(nomeProprieta);
 
-        //verifica se la proprietà 'interfaccia' esiste e possiede valore significativo
-        if (stringaTipologiaGUI == null || stringaTipologiaGUI.isBlank()) {
+        //verifica se la proprietà nomeProprieta esiste e possiede valore significativo
+        if (valore == null || valore.isBlank()) {
             throw new ConfigurazioneException(
-                    "Proprietà 'tipologiaGUI' mancante o vuota"
+                    "Proprietà '" + nomeProprieta + "' mancante o vuota"
             );
         }
 
+        return valore.trim();
+    }
+
+    //getter della tipologia di GUI da utilizzare
+    public TipologiaGUI getTipologiaGUI() {
+
+        String valoreTipologiaGUI = getProprieta("TIPOLOGIA_GUI");
+
+        //verifica se 'TIPOLOGIA_GUI' possiede un valore dell'enum TipologiaGUI
         try {
-            //restituisci il valore della proprietà 'tipologiaGUI', dopo averla formattata in un valore dell'enum TipologiaGUI
             return TipologiaGUI.valueOf(
-                    stringaTipologiaGUI.trim().toUpperCase()
+                    valoreTipologiaGUI.toUpperCase()
             );
 
         } catch (IllegalArgumentException ex) {
             throw new ConfigurazioneException(
-                    "Tipologia di GUI non riconosciuta: " + stringaTipologiaGUI,
+                    "Tipologia di GUI non riconosciuta: " + valoreTipologiaGUI,
                     ex
             );
         }
+    }
+
+    //getter dell'URL di connessione al database
+    public String getConnectionURL() {
+        return getProprieta("CONNECTION_URL");
+    }
+
+    //getter dello username dell'utente MySQL
+    public String getDBUser() {
+        return getProprieta("DB_USER");
+    }
+
+    //getter della password dell'utente MySQL
+    public String getDBPassword() {
+        return getProprieta("DB_PASS");
     }
 }

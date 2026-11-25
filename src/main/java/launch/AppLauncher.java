@@ -1,15 +1,15 @@
-package avvioapp;
+package launch;
 
 import config.GestoreConfigurazione;
 import config.TipologiaGUI;
-import context.ApplicazioneContext;
+import ui.cli.CliEngine;
 
 //classe con responsabilità di avvio del software
 public class AppLauncher {
 
-    static void main(String[] args) {
+    static void main() {
 
-        GestoreConfigurazione gestoreConfigurazione = new GestoreConfigurazione();
+        GestoreConfigurazione gestoreConfigurazione = GestoreConfigurazione.getInstance();
 
         //recupero della proprietà TipologiaGUI definita
         TipologiaGUI tipologiaGUI =
@@ -18,8 +18,8 @@ public class AppLauncher {
         switch (tipologiaGUI) {
 
             case CLI: {
-                ApplicazioneContext applicazioneContext = new ApplicazioneContext();
-                CLIApp.avvia();
+                CliEngine cliEngine = new CliEngine();
+                cliEngine.start();
                 break;
             }
 

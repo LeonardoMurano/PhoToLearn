@@ -1,4 +1,4 @@
--- MySQL Workbench Forward Engineering
+-- DB PhoToLearn: 01_creazione_tabelle
 
 DROP DATABASE IF EXISTS `PhoToLearn`;
 
