@@ -1,6 +1,6 @@
 package database;
 
-import config.GestoreConfigurazione;
+import config.ConfigurationManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -8,10 +8,10 @@ import java.sql.SQLException;
 
 /**classe con responsabilità di:
  * 1-creazione connessione al DB
- * 2-mantenimento della connessione globale
+ * 2-mantenimento della connessione al DB
  * -----
- * la classe è singleton: viene creata un'unica connessione
- * condivisa da tutte le classi del software.
+ * la classe è singleton: le connessioni al DB
+ * sono gestite dalla sua unica istanza
  */
 public class ConnectionFactory {
 
@@ -26,7 +26,7 @@ public class ConnectionFactory {
     // Costruttore privato: impedisce l'istanziazione esterna
     private ConnectionFactory() {
 
-        GestoreConfigurazione gestoreConfigurazione = GestoreConfigurazione.getInstance();
+        ConfigurationManager gestoreConfigurazione = ConfigurationManager.getInstance();
 
         connectionURL = gestoreConfigurazione.getConnectionURL();
         dbUser = gestoreConfigurazione.getDBUser();

@@ -1,6 +1,6 @@
 package config;
 
-import exception.ConfigurazioneException;
+import exception.ConfigurationException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,25 +13,25 @@ import java.util.Properties;
  * la classe è singleton: le proprietà contenute in config.properties
  * sono condivise da tutte le classi del software.
  */
-public class GestoreConfigurazione {
+public class ConfigurationManager {
 
     //riferimento all'unica istanza di GestoreConfigurazione
-    private static GestoreConfigurazione instance;
+    private static ConfigurationManager instance;
 
     private final Properties properties;
 
 
     // Costruttore privato: impedisce l'istanziazione esterna
-    private GestoreConfigurazione() {
+    private ConfigurationManager() {
         properties = new Properties();
         caricaProperties();
     }
 
     // Getter dell'unica istanza di GestoreConfigurazione
-    public static GestoreConfigurazione getInstance() {
+    public static ConfigurationManager getInstance() {
 
         if (instance == null) {
-            instance = new GestoreConfigurazione();
+            instance = new ConfigurationManager();
         }
 
         return instance;
@@ -47,7 +47,7 @@ public class GestoreConfigurazione {
 
             //gestione caso in cui la risorsa non viene trovata
             if (input == null) {
-                throw new ConfigurazioneException(
+                throw new ConfigurationException(
                         "Impossibile trovare config.properties nel classpath"
                 );
             }
@@ -56,7 +56,7 @@ public class GestoreConfigurazione {
             properties.load(input);
 
         } catch (IOException ex) {
-            throw new ConfigurazioneException(
+            throw new ConfigurationException(
                     "Errore durante la lettura di config.properties",
                     ex
             );
@@ -71,7 +71,7 @@ public class GestoreConfigurazione {
 
         //verifica se la proprietà nomeProprieta esiste e possiede valore significativo
         if (valore == null || valore.isBlank()) {
-            throw new ConfigurazioneException(
+            throw new ConfigurationException(
                     "Proprietà '" + nomeProprieta + "' mancante o vuota"
             );
         }
@@ -91,7 +91,7 @@ public class GestoreConfigurazione {
             );
 
         } catch (IllegalArgumentException ex) {
-            throw new ConfigurazioneException(
+            throw new ConfigurationException(
                     "Tipologia di GUI non riconosciuta: " + valoreTipologiaGUI,
                     ex
             );

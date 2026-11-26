@@ -2,78 +2,48 @@ package Controller.session;
 
 import context.UserSessionContext;
 
-import java.util.Scanner;
-
-//DA CONTROLLARE E TERMINARE
+//controller applicativo degli eventi di sessione: login, logout, registrazione
 public class SessionController {
 
-    private final SessionManager sessionManager;
+    //riferimento a oggetto istanza di UserSessionContext
+    private UserSessionContext session;
 
-    private final InputReader inputReader;
-    private final OutputPrinter outputPrinter;
 
-    public CliEngine(SessionManager sessionManager) {
-        this.sessionManager = sessionManager;
-
-        Scanner scanner = new Scanner(System.in);
-        this.outputPrinter = new OutputPrinter();
-        this.inputReader = new InputReader(scanner, outputPrinter);
+    //metodo che verifica se un utente è autenticato
+    public boolean isAuthenticated() {
+        return session != null;
     }
 
-    public UserSessionContext getSessionContext() {
-        return sessionManager.getSession();
+
+    //metodo che crea una nuova istanza di UserSessionContext
+    public void startSession(/*param che rappresentano la sessione*/) {            //SARA' INVOCATA AL TERMINE DEL LOGIN
+        //se esiste una sessione, la termina
+        if (session != null) {
+            session.terminate();
+        }
+        //assegna a session il riferimento al nuovo oggetto UserSessionContext
+        session = new UserSessionContext(/*param che rappresentano la sessione*/);
     }
 
-    public InputReader getInput() {
-        return inputReader;
-    }
-
-    public OutputPrinter getPrinter() {
-        return outputPrinter;
-    }
-
-    public void start() {
-
-        CliView currentCliView = initialView();
-
-        while (currentCliView != null) {
-
-            CliView nextView = currentCliView.execute(this);
-
-            if (nextView != null &&
-                    !(nextView instanceof AuthenticationCli) &&
-                    !sessionManager.isAuthenticated()) {
-
-                currentCliView.stop();
-                currentCliView = new AuthenticationCli();
-                continue;
-            }
-
-            if (currentCliView != nextView) {
-                currentCliView.stop();
-            }
-
-            currentCliView = nextView;
+    //metodo che restituisce il riferimento all'istanza di UserSessionContext
+    public UserSessionContext getSession() {
+        //verifica se esiste una sessione utente
+        if (session == null) {
+            throw new IllegalStateException("Nessun utente autenticato");
         }
 
-        outputPrinter.printInfo("Chiusura dell'applicazione.");
+        //restituisce il riferimento alla sessione
+        return session;
     }
 
-    private CliView initialView() {
 
-        if (sessionManager.hasPersistedTokens()) {
-            try {
-                sessionManager.resumeSessionAsync().join();
-                return new DashboardCli();
+    //metodo che gestisce la disconnessione dell'utente
+    public void logout() {                  //SARA' INVOCATA SU RICHIESTA DI LOGOUT
 
-            } catch (CompletionException e) {
-                outputPrinter.printInfo(
-                        "Sessione scaduta, effettua nuovamente il login."
-                );
-                sessionManager.logout();
-            }
+        //se esiste una sessione, la termina e assegna alla variabile session il riferimento a null
+        if (session != null) {
+            session.terminate();
+            session = null;
         }
-
-        return new AuthenticationCli();
     }
 }
